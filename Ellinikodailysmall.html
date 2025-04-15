@@ -1,0 +1,21 @@
+<div style="font-family:sans-serif;font-size:12px;display:flex;align-items:center;gap:10px;padding:5px;white-space:nowrap;">
+  <span>🌡️ Temp: <span id="temp">--</span>°C</span>
+  <span>💧 Hum: <span id="humidity">--</span>%</span>
+  <span>☁️ Cloud: <span id="cloud">--</span>%</span>
+  <span>🌧️ Precip: <span id="precip">--</span> mm</span>
+  <span>💨 Wind: <span id="wind">--</span> km/h</span>
+  <span>🧭 Dir: <span id="dir">--</span>°</span>
+</div>
+<script>
+  fetch("https://api.open-meteo.com/v1/forecast?latitude=37.875&longitude=23.75&current=temperature_2m,relative_humidity_2m,cloud_cover,precipitation,wind_speed_10m,wind_direction_10m&timezone=Europe%2FAthens")
+    .then(res => res.json())
+    .then(data => {
+      const c = data.current;
+      document.getElementById("temp").textContent = c.temperature_2m;
+      document.getElementById("humidity").textContent = c.relative_humidity_2m;
+      document.getElementById("cloud").textContent = c.cloud_cover;
+      document.getElementById("precip").textContent = c.precipitation;
+      document.getElementById("wind").textContent = c.wind_speed_10m;
+      document.getElementById("dir").textContent = c.wind_direction_10m;
+    });
+</script>
