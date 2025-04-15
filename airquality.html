@@ -1,0 +1,18 @@
+<div style="font-family:sans-serif; font-size:12px; display:flex; gap:15px; align-items:center; white-space:nowrap;">
+  <span>🌫️ PM2.5: <span id="pm25">--</span> µg/m³</span>
+  <span>🌪️ PM10: <span id="pm10">--</span> µg/m³</span>
+  <span>🧪 NO₂: <span id="no2">--</span> µg/m³</span>
+  <span>☁️ O₃: <span id="o3">--</span> µg/m³</span>
+</div>
+<script>
+  fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=37.89&longitude=23.75&hourly=pm10,pm2_5,nitrogen_dioxide,ozone&timezone=Europe%2FAthens")
+    .then(res => res.json())
+    .then(data => {
+      const hourIndex = 12; // Approx. 12:00 noon data
+      document.getElementById("pm25").textContent = data.hourly.pm2_5[hourIndex];
+      document.getElementById("pm10").textContent = data.hourly.pm10[hourIndex];
+      document.getElementById("no2").textContent = data.hourly.nitrogen_dioxide[hourIndex];
+      document.getElementById("o3").textContent = data.hourly.ozone[hourIndex];
+    })
+    .catch(err => console.error("Failed to load air quality data", err));
+</script>
