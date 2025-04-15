@@ -1,23 +1,22 @@
-<div style="font-family:sans-serif;font-size:12px;display:flex;flex-wrap:wrap;gap:10px;white-space:nowrap" id="header-bar">
+<div style="font-family:sans-serif;font-size:12px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;white-space:nowrap;">
   <span>🌡️ Temp: <span id="temp">--</span>°C</span>
   <span>💧 Hum: <span id="humidity">--</span>%</span>
   <span>☁️ Cloud: <span id="cloud">--</span>%</span>
   <span>🌧️ Precip: <span id="precip">--</span> mm</span>
   <span>💨 Wind: <span id="wind">--</span> km/h</span>
   <span>🧭 Dir: <span id="dir">--</span>°</span>
-  <span>🌬️ Dust: <span id="dust">--</span></span>
-  <span>🌫️ PM2.5: <span id="pm25">--</span></span>
-  <span>🌪️ PM10: <span id="pm10">--</span></span>
-  <span>🧪 NO₂: <span id="no2">--</span></span>
-  <span>☁️ O₃: <span id="o3">--</span></span>
-  <span>🔥 CO: <span id="co">--</span></span>
+  <span>🌬️ Dust: <span id="dust">--</span> µg/m³</span>
+  <span>🌫️ PM2.5: <span id="pm25">--</span> µg/m³</span>
+  <span>🌪️ PM10: <span id="pm10">--</span> µg/m³</span>
+  <span>🧪 NO₂: <span id="no2">--</span> µg/m³</span>
+  <span>☁️ O₃: <span id="o3">--</span> µg/m³</span>
+  <span>🔥 CO: <span id="co">--</span> µg/m³</span>
 </div>
-
 <script>
   fetch("https://api.open-meteo.com/v1/forecast?latitude=37.875&longitude=23.75&current=temperature_2m,relative_humidity_2m,cloud_cover,precipitation,wind_speed_10m,wind_direction_10m&timezone=Europe%2FAthens")
     .then(res => res.json())
     .then(data => {
-      let c = data.current;
+      const c = data.current;
       document.getElementById("temp").textContent = c.temperature_2m;
       document.getElementById("humidity").textContent = c.relative_humidity_2m;
       document.getElementById("cloud").textContent = c.cloud_cover;
@@ -26,7 +25,7 @@
       document.getElementById("dir").textContent = c.wind_direction_10m;
     });
 
-  fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=37.8901&longitude=23.7441&current=dust,pm10,pm2_5,ozone,nitrogen_dioxide,carbon_monoxide")
+  fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=37.8901&longitude=23.7441&current=aerosol_optical_depth,dust,pm10,pm2_5,ozone,sulphur_dioxide,nitrogen_dioxide,carbon_monoxide")
     .then(r => r.json())
     .then(d => {
       let c = d.current;
