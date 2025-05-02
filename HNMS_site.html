@@ -18,7 +18,7 @@
     .then(res => res.json())
     .then(data => {
       const c = data.current;
-      document.getElementById("temp").textContent = c.temperature_2m;
+      document.getElementById("Temprature").textContent = c.temperature_2m;
       document.getElementById("humidity").textContent = c.relative_humidity_2m;
       document.getElementById("cloud").textContent = c.cloud_cover;
       document.getElementById("precip").textContent = c.precipitation;
