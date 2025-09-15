@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EGSA87 → WGS84 Converter</title>
+<script src="https://cdn.jsdelivr.net/npm/proj4@2.9.2/dist/proj4.js"></script>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    margin: 1rem;
+    max-width: 320px;        /* good for small windows */
+  }
+  h1 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  label, #result {
+    display: block;
+    margin-top: 0.75rem;
+  }
+  input {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.25rem;
+    box-sizing: border-box;
+  }
+  button {
+    margin-top: 1rem;
+    padding: 0.6rem 1rem;
+    width: 100%;
+  }
+</style>
+</head>
+<body>
+
+<h1>EGSA ’87 → WGS84</h1>
+
+<label for="coords">EGSA coordinates (x,y)</label>
+<input id="coords" type="text" placeholder="e.g. 482000,4200000">
+
+<button onclick="convert()">Convert</button>
+
+<div id="result"></div>
+
+<script>
+  const egsa87 = '+proj=tmerc +lat_0=0 +lon_0=24 +k=0.9996 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs';
+  const wgs84 = 'EPSG:4326';
+
+  function convert() {
+    const raw = document.getElementById('coords').value.trim();
+    // Accept "x,y" or "x y"
+    const parts = raw.split(/[ ,]+/);
+    if (parts.length !== 2) {
+      document.getElementById('result').textContent = 'Please enter X and Y separated by comma or space.';
+      return;
+    }
+    const x = parseFloat(parts[0]);
+    const y = parseFloat(parts[1]);
+    if (isNaN(x) || isNaN(y)) {
+      document.getElementById('result').textContent = 'Invalid numbers.';
+      return;
+    }
+    const [lon, lat] = proj4(egsa87, wgs84, [x, y]);
+    document.getElementById('result').textContent =
+      `WGS coordinates is:\n ${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+  }
+</script>
+
+</body>
+</html>
