@@ -1,71 +1,86 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EGSA87 → WGS84 Converter</title>
-<script src="https://cdn.jsdelivr.net/npm/proj4@2.9.2/dist/proj4.js"></script>
-<style>
-  body {
-    font-family: system-ui, sans-serif;
-    margin: 1rem;
-    max-width: 320px;        /* good for small windows */
-  }
-  h1 {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-  }
-  label, #result {
-    display: block;
-    margin-top: 0.75rem;
-  }
-  input {
-    width: 100%;
-    padding: 0.5rem;
-    margin-top: 0.25rem;
-    box-sizing: border-box;
-  }
-  button {
-    margin-top: 1rem;
-    padding: 0.6rem 1rem;
-    width: 100%;
-  }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>EGSA87 → WGS84 (fixed)</title>
+  <script src="https://cdn.jsdelivr.net/npm/proj4@2.9.2/dist/proj4.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 1rem; max-width: 480px; }
+    label, #result { display:block; margin-top:.6rem; }
+    input { width:100%; padding:.5rem; box-sizing:border-box; margin-top:.25rem;}
+    button{ margin-top:.8rem; padding:.6rem; width:100%;}
+    pre{ background:#f4f4f4; padding:.6rem; white-space:pre-wrap; }
+  </style>
 </head>
 <body>
+  <h1>EGSA87 → WGS84 (with datum shift)</h1>
 
-<h1>EGSA ’87 → WGS84</h1>
+  <label for="coords">EGSA coordinates (Easting,Northing)</label>
+  <input id="coords" placeholder="e.g. 482000,4200000" />
 
-<label for="coords">EGSA coordinates (x,y)</label>
-<input id="coords" type="text" placeholder="e.g. 482000,4200000">
+  <button onclick="convert()">Convert</button>
 
-<button onclick="convert()">Convert</button>
+  <div id="result"></div>
 
-<div id="result"></div>
+  <script>
+    // register EPSG:2100 (GGRS87 / Greek Grid) with the official datum shift to WGS84
+    proj4.defs("EPSG:2100",
+      "+proj=tmerc +lat_0=0 +lon_0=24 +k=0.9996 +x_0=500000 +y_0=0 "
+      + "+ellps=GRS80 "
+      // <-- this is the essential datum transform (EGSA87/GGRS87 -> WGS84)
+      + "+towgs84=-199.87,74.79,246.62,0,0,0,0 "
+      + "+units=m +no_defs"
+    );
 
-<script>
-  const egsa87 = '+proj=tmerc +lat_0=0 +lon_0=24 +k=0.9996 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs';
-  const wgs84 = 'EPSG:4326';
+    // same projection but WITHOUT the datum translation (for comparison)
+    const egsaNoShift = "+proj=tmerc +lat_0=0 +lon_0=24 +k=0.9996 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs";
 
-  function convert() {
-    const raw = document.getElementById('coords').value.trim();
-    // Accept "x,y" or "x y"
-    const parts = raw.split(/[ ,]+/);
-    if (parts.length !== 2) {
-      document.getElementById('result').textContent = 'Please enter X and Y separated by comma or space.';
-      return;
+    // WGS84 alias
+    const wgs = "WGS84";
+
+    function toFixedPair(p) { return p.map(v => Number(v).toFixed(7)).join(", "); }
+
+    function haversineMeters(lat1, lon1, lat2, lon2) {
+      const toRad = d => d * Math.PI/180;
+      const R = 6371000; // m
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2)) * Math.sin(dLon/2)**2;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
     }
-    const x = parseFloat(parts[0]);
-    const y = parseFloat(parts[1]);
-    if (isNaN(x) || isNaN(y)) {
-      document.getElementById('result').textContent = 'Invalid numbers.';
-      return;
-    }
-    const [lon, lat] = proj4(egsa87, wgs84, [x, y]);
-    document.getElementById('result').textContent =
-      `WGS coordinates is:\n ${lon.toFixed(6)}, ${lat.toFixed(6)}`;
-  }
-</script>
 
+    function convert(){
+      const raw = document.getElementById("coords").value.trim();
+      const parts = raw.split(/[ ,]+/);
+      const resultDiv = document.getElementById("result");
+      if(parts.length !== 2) { resultDiv.innerHTML = "<b>Enter two numbers:</b> easting, northing"; return; }
+      const x = parseFloat(parts[0]), y = parseFloat(parts[1]);
+      if(isNaN(x) || isNaN(y)) { resultDiv.innerHTML = "<b>Invalid numbers</b>"; return; }
+
+      // convert with the correct EPSG:2100 (includes +towgs84)
+      const withShift = proj4("EPSG:2100", wgs, [x, y]); // returns [lon, lat]
+      // convert using the projection WITHOUT the datum translation (what you had before)
+      const withoutShift = proj4(egsaNoShift, wgs, [x, y]);
+
+      const lonWith = withShift[0], latWith = withShift[1];
+      const lonNo = withoutShift[0], latNo = withoutShift[1];
+
+      const dist = haversineMeters(latWith, lonWith, latNo, lonNo);
+
+      resultDiv.innerHTML = `
+        <pre>
+Input (E,N): ${x}, ${y}
+
+WGS84 (WITH datum shift):    ${lonWith.toFixed(7)}, ${latWith.toFixed(7)}
+WGS84 (WITHOUT datum shift): ${lonNo.toFixed(7)}, ${latNo.toFixed(7)}
+
+Approx. difference between the two results: ${dist.toFixed(1)} m
+(If you previously saw ~500 m, this is the same systematic datum offset you were hitting.)
+        </pre>
+      `;
+    }
+  </script>
 </body>
 </html>
