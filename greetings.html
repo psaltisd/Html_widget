@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Greeting</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 10px;
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+      color: #333;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="greeting"></div>
+
+  <script>
+    function updateGreeting() {
+      const now = new Date();
+
+      // Greece time
+      const greeceTime = new Date(
+        now.toLocaleString("en-US", { timeZone: "Europe/Athens" })
+      );
+
+      const hour = greeceTime.getHours();
+      const greeting =
+        (hour >= 0 && hour < 12) ? "Good morning," : "Good afternoon,";
+
+      document.getElementById("greeting").innerHTML =
+        greeting + "<br>Welcome to The Ellinikon";
+    }
+
+    updateGreeting();
+    // Optional refresh every 5 minutes
+    setInterval(updateGreeting, 300000);
+  </script>
+
+</body>
+</html>
