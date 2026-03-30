@@ -29,10 +29,10 @@
 
       const hour = greeceTime.getHours();
       const greeting =
-        (hour >= 5 && hour < 12) ? "Good morning" : "Good evening";
+        (hour >= 5 && hour < 12) ? "Good morning, " : "Good evening, ";
 
       document.getElementById("greeting").innerHTML =
-        greeting + "<br>Welcome to";
+        greeting + "Welcome to";
     }
 
     updateGreeting();
