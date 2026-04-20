@@ -1,14 +1,10 @@
-<div style="text-align:center; font-family: Arial;">
-  <h2 id="loadingText">Loading... 10s</h2>
-  <button id="proceedBtn" style="display:none; padding:10px 20px; cursor:pointer;">
-    Proceed
-  </button>
+<div id="loadingText" style="text-align:center; font-family: Arial; font-size: 22px;">
+  Loading... 10s
 </div>
 
 <img src="x" onerror="
 let timeLeft = 10;
 const text = document.getElementById('loadingText');
-const btn = document.getElementById('proceedBtn');
 
 const countdown = setInterval(function() {
 timeLeft--;
@@ -16,12 +12,7 @@ if (timeLeft > 0) {
 text.innerHTML = 'Loading... ' + timeLeft + 's';
 } else {
 clearInterval(countdown);
-text.innerHTML = 'Loading completed. Press Proceed';
-btn.style.display = 'inline-block';
+text.innerHTML = 'Loading completed';
 }
 }, 1000);
-
-btn.onclick = function() {
-alert('Proceeding...');
-};
 ">
