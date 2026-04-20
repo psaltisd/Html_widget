@@ -1,44 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Greeting</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 10px;
-      font-family: Arial, sans-serif;
-      font-size: 18px;
-      color: #333;
-      text-align: center;
-    }
-  </style>
-</head>
-<body>
+<div style="text-align:center; font-family: Arial;">
+  <h2 id="loadingText">Loading... 10s</h2>
+  <button id="proceedBtn" style="display:none; padding:10px 20px; cursor:pointer;">
+    Proceed
+  </button>
+</div>
 
-  <div id="greeting"></div>
+<img src="x" onerror="
+let timeLeft = 10;
+const text = document.getElementById('loadingText');
+const btn = document.getElementById('proceedBtn');
 
-  <script>
-    function updateGreeting() {
-      const now = new Date();
+const countdown = setInterval(function() {
+timeLeft--;
+if (timeLeft > 0) {
+text.innerHTML = 'Loading... ' + timeLeft + 's';
+} else {
+clearInterval(countdown);
+text.innerHTML = 'Loading completed. Press Proceed';
+btn.style.display = 'inline-block';
+}
+}, 1000);
 
-      // Greece time
-      const greeceTime = new Date(
-        now.toLocaleString("en-US", { timeZone: "Europe/Athens" })
-      );
-
-      const hour = greeceTime.getHours();
-      const greeting =
-        (hour >= 5 && hour < 12) ? "Good morning, " : "Good evening, ";
-
-      document.getElementById("greeting").innerHTML =
-        greeting + "Welcome to";
-    }
-
-    updateGreeting();
-    // Optional refresh every 5 minutes
-    setInterval(updateGreeting, 300000);
-  </script>
-
-</body>
-</html>
+btn.onclick = function() {
+alert('Proceeding...');
+};
+">
