@@ -9,10 +9,10 @@ const text = document.getElementById('loadingText');
 const countdown = setInterval(function() {
 timeLeft--;
 if (timeLeft > 0) {
-text.innerHTML = 'Loading... ' + timeLeft + 's';
+text.innerHTML = 'Loading... ' + timeLeft + ' sec';
 } else {
 clearInterval(countdown);
-text.innerHTML = 'Loading completed';
+text.innerHTML = 'Loading completed, click "Done"';
 }
 }, 1000);
 ">
