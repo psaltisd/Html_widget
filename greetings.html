@@ -1,8 +1,8 @@
-<div id="loadingText" style="text-align:center; font-family: Arial; font-size: 22px;">
+<div id="loadingText" style="text-align:center; font-family: Arial; font-size: 24px;">
   Loading... 10s
 </div>
 
-<img src="x" onerror="
+<img src="x" style="display:none;" onerror="
 let timeLeft = 10;
 const text = document.getElementById('loadingText');
 
@@ -12,7 +12,7 @@ if (timeLeft > 0) {
 text.innerHTML = 'Loading... ' + timeLeft + ' sec';
 } else {
 clearInterval(countdown);
-text.innerHTML = 'Loading completed, click "Done"';
+text.innerHTML = 'Done';
 }
 }, 1000);
 ">
