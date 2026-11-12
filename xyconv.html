@@ -60,7 +60,8 @@
     }
     const [lon, lat] = proj4(egsa87, wgs84, [x, y]);
     document.getElementById('result').textContent =
-      `WGS coordinates:\n${lon.toFixed(6)}, ${lat.toFixed(6)}`;
+  `WGS Application coordinates:\n${lon.toFixed(6)}, ${lat.toFixed(6)}\n\n` +
+  `WGS Google coordinates:\n${lat.toFixed(6)}, ${lon.toFixed(6)}`;
   }
 </script>
 
